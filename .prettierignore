@@ -1,0 +1,14 @@
+*
+
+!src/**/
+!.vscode/**/
+!.vim/**/
+
+!*.ts
+!*.js
+!*.md
+!*.json
+!*.yml
+
+/.pnp.*
+

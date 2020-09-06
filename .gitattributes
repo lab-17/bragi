@@ -1,0 +1,3 @@
+# Ignore Yarn 2 files in git diff
+yarn.lock   -diff
+.yarn/**    -diff

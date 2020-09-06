@@ -1,0 +1,46 @@
+# Ignore all
+*
+
+# Global allowed extensions
+!*.ts
+
+# Global allowed files
+!.gitkeep
+
+# Allowed folders
+!src/
+!src/**/
+
+# Project root allowed extensions
+!/*.js
+!/*.json
+!/*.lock
+!/.*ignore
+!/.*rc
+!/.*config
+!/.git*
+!/.*.yml
+!/*.md
+
+# VSCode configs
+!.vscode/
+!.vscode/*.json
+
+# VIM configs
+!.vim/
+!.vim/*.json
+
+# Yarn 2 configs
+!.yarn/
+!.yarn/releases
+!.yarn/releases/**
+!.yarn/plugins
+!.yarn/plugins/**
+!.yarn/sdks
+!.yarn/sdks/**
+!.yarn/versions
+!.yarn/versions/**
+/.pnp.*
+
+# Remove npm in favor of Yarn 2
+package-lock.json

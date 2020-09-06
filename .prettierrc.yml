@@ -1,0 +1,8 @@
+printWidth: 100
+semi: false
+singleQuote: true
+quoteProps: as-needed
+trailingComma: all
+bracketSpacing: true
+arrowParens: always
+proseWrap: always
