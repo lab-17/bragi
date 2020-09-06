@@ -1,11 +1,4 @@
-import { BragiModesNames, BragiModes } from './modes/types'
-import { BragiTransportsNames, BragiTransports } from './transports/types'
-
 export interface BragiOptions {
-    mode?: BragiModesNames
-    modes?: Partial<BragiModes>
-    transport?: BragiTransportsNames
-    transports?: Partial<BragiTransports>
     ponyfill?: BragiPonyfillOptions
 }
 
