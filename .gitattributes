@@ -1,0 +1,4 @@
+# Ignore Yarn 2 files in git diff
+yarn.lock   -diff
+.yarn/**    -diff
+*.mp3 filter=lfs diff=lfs merge=lfs -text
