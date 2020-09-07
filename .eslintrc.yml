@@ -1,5 +1,8 @@
 env:
   es2020: true
+  node: true
+  browser: true
+  jest: true
 extends:
   - eslint:recommended
   - plugin:@typescript-eslint/recommended
@@ -10,13 +13,3 @@ parserOptions:
 plugins:
   - '@typescript-eslint'
 rules: {}
-overrides:
-  - files: '*.js'
-    env:
-      node: true
-  - files: '*.ts'
-    env:
-      browser: true
-  - files: '*.spec.ts'
-    env:
-      jest: true

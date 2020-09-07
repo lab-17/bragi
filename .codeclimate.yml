@@ -1,4 +1,4 @@
-version: "2"
+version: '2'
 checks:
   argument-count:
     enabled: true
@@ -25,13 +25,9 @@ plugins:
     enabled: true
   git-legal:
     enabled: true
-  duplication:
+  fixme:
     enabled: true
-    config:
-      languages:
-      - javascript:
-      - typescript:
 exclude_patterns:
-  - ".yarn/"
-  - "yarn.lock"
-  - "**/*.spec.ts"
+  - '.yarn/'
+  - 'yarn.lock'
+  - '**/*.spec.ts'
