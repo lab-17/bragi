@@ -1,6 +1,6 @@
 {
   "name": "Bragi",
-  "mode": "library",
+  "mode": "file",
   "out": "./docs",
   "includes": "./src",
   "readme": "./README.md",
