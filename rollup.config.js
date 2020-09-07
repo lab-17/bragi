@@ -5,6 +5,8 @@ import typescript from '@rollup/plugin-typescript'
 import dts from 'rollup-plugin-dts'
 import { terser } from 'rollup-plugin-terser'
 
+const [, filename] = name.split('/')
+
 const input = './src/index.ts'
 const outputDir = './lib'
 
@@ -92,7 +94,7 @@ export default [
             {
                 ...browserConfig,
                 format: 'esm',
-                file: `${outputDir}/bundle/esm/${name}.js`,
+                file: `${outputDir}/bundle/esm/${filename}.js`,
                 plugins: [
                     babel({
                         presets: [
@@ -110,10 +112,10 @@ export default [
             },
             {
                 ...browserConfig,
-                name,
+                name: filename,
                 format: 'umd',
                 exports: 'named',
-                file: `${outputDir}/bundle/umd/${name}.js`,
+                file: `${outputDir}/bundle/umd/${filename}.js`,
                 plugins: [
                     babel({
                         allowAllFormats: true,
@@ -135,7 +137,7 @@ export default [
                 ...browserConfig,
                 format: 'system',
                 exports: 'named',
-                file: `${outputDir}/bundle/system/${name}.js`,
+                file: `${outputDir}/bundle/system/${filename}.js`,
                 plugins: [
                     babel({
                         allowAllFormats: true,
@@ -157,7 +159,7 @@ export default [
                 ...browserConfig,
                 format: 'amd',
                 exports: 'named',
-                file: `${outputDir}/bundle/amd/${name}.js`,
+                file: `${outputDir}/bundle/amd/${filename}.js`,
                 plugins: [
                     babel({
                         allowAllFormats: true,
