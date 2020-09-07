@@ -22,7 +22,16 @@ checks:
     enabled: true
 plugins:
   editorconfig:
-    enable: true
+    enabled: true
+  git-legal:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript:
+      - typescript:
 exclude_patterns:
-  - ".yarn"
+  - ".yarn/"
+  - "yarn.lock"
   - "**/*.spec.ts"
