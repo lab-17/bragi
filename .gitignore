@@ -30,6 +30,12 @@
 !.vim/
 !.vim/*.json
 
+# GitHub configs
+!.github/
+!.github/*.yml
+!.github/**/
+!.github/**/*.md
+
 # Yarn 2 configs
 !.yarn/
 !.yarn/releases

@@ -3,6 +3,7 @@
 !src/**/
 !.vscode/**/
 !.vim/**/
+!.github/**/
 
 !*.ts
 !*.js
