@@ -1,0 +1,34 @@
+name: Verify pull request
+
+on:
+  pull_request:
+    branches:
+      - master
+      - next
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install 🔧
+        run: |
+          npm i -g yarn
+          yarn
+
+      - name: Verify tests and coverage 🔧
+        run: yarn coverage
