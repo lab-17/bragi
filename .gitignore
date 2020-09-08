@@ -10,6 +10,11 @@
 # Allowed folders
 !src/
 !src/**/
+!audio/
+
+# Allowed audio files
+!audio/*.md
+!audio/*.mp3
 
 # Project root allowed extensions
 !/*.js
