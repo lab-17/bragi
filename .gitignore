@@ -39,7 +39,8 @@
 !.github/
 !.github/*.yml
 !.github/**/
-!.github/**/*.md
+!.github/ISSUE_TEMPLATE/*.md
+!.github/workflows/*.yml
 
 # Yarn 2 configs
 !.yarn/
