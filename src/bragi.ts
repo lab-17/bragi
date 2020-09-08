@@ -1,16 +1,12 @@
-import { BragiPonyfills, BragiOptions, BragiPonyfillOptions } from './types'
+import { IAudioContext } from 'standardized-audio-context'
 
-export interface BragiController {
-    play: () => void
-    pause: () => void
-    stop: () => void
-    changeVolume: (value: number) => void
-}
-
-interface BragiSourceOptions {
-    label?: string
-    url: string
-}
+import {
+    BragiPonyfills,
+    BragiOptions,
+    BragiPonyfillOptions,
+    BragiController,
+    BragiSourceOptions,
+} from './types'
 
 export class Bragi {
     private locked = true
@@ -20,7 +16,7 @@ export class Bragi {
 
     private audios = new Map<symbol, BragiController>()
 
-    private context?: AudioContext
+    private context?: IAudioContext | AudioContext
     private safe: BragiPonyfills
 
     readonly isBrowser = typeof window !== undefined
@@ -51,13 +47,13 @@ export class Bragi {
 
             if (!impl)
                 throw this.isBrowser
-                    ? new Error(`This browser not have support to ${name}, please add a ponyfill.`)
-                    : new Error(`This runtime not have support to ${name}, please add a ponyfill.`)
+                    ? new Error(`This browser not have support to ${api}, please add a ponyfill.`)
+                    : new Error(`This runtime not have support to ${api}, please add a ponyfill.`)
 
             ponyfill[api] = impl
         })
 
-        return ponyfill
+        return ponyfill as BragiPonyfills
     }
 
     private addUnlockListeners(): void {
