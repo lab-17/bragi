@@ -2,7 +2,8 @@ name: Deploy documentation to GitHub Pages
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
 
 jobs:
   build:
@@ -23,11 +24,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install and Build 🔧
+      - name: Install 🔧
         run: |
           npm i -g yarn
           yarn
-          yarn doc
+
+      - name: Build 🔧
+        run: |
+          yarn docs
           touch docs/.nojekyll
 
       - name: Deploy 🚀
