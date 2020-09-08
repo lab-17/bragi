@@ -1,6 +1,7 @@
 *
 
 !src/**/
+!audio/**/
 !.vscode/**/
 !.vim/**/
 !.github/**/
