@@ -1,9 +1,8 @@
-name: Deploy documentation to GitHub Pages
+name: Publish documentation
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
 
 jobs:
   build:
@@ -19,7 +18,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ matrix.node-version }} 🔧
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
@@ -29,13 +28,13 @@ jobs:
           npm i -g yarn
           yarn
 
-      - name: Build 🔧
+      - name: Build documentation 🔧
         run: |
           yarn docs
           touch docs/.nojekyll
 
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@3.5.9
+      - name: Deploy documentation 🚀
+        uses: JamesIves/github-pages-deploy-action@3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: docs
