@@ -17,6 +17,9 @@ jobs:
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Cache yarn
         uses: actions/cache@v2
@@ -43,6 +46,12 @@ jobs:
         run: |
           npm i -g yarn
           yarn
+
+      - name: Lint code style 🔧
+        run: yarn lint
+
+      - name: Verify tests and coverage 🔧
+        run: yarn coverage
 
       - name: Build 🔧
         run: |
