@@ -1,4 +1,4 @@
-name: Verify & Release
+name: Verify project patterns
 
 on:
   push:
