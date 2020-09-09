@@ -1,0 +1,16 @@
+*
+
+!src/**/
+!audio/**/
+!.vscode/**/
+!.vim/**/
+!.github/**/
+
+!*.ts
+!*.js
+!*.md
+!*.json
+!*.yml
+
+/.pnp.*
+
