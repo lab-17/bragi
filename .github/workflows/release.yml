@@ -59,7 +59,7 @@ jobs:
         env:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
         with:
-          coverageCommand: exit 0
+          coverageCommand: echo "👌🏿 ready to publish!"
           coverageLocations: |
             ${{github.workspace}}/coverage/lcov.info:lcov
 
