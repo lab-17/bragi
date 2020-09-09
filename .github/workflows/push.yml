@@ -5,6 +5,7 @@ on:
     branches-ignore:
       - master
       - next
+      - docs
 
 jobs:
   build:
