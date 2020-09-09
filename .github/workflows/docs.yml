@@ -53,6 +53,8 @@ jobs:
       - name: Deploy documentation 🚀
         uses: JamesIves/github-pages-deploy-action@3.5.9
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACCESS_TOKEN: ${{ secrets.GH_TOKEN }}
+          GIT_CONFIG_NAME: 'Vinícius Carvalho'
+          GIT_CONFIG_EMAIL: 'vinicius@criptext.com'
           BRANCH: docs
           FOLDER: docs
