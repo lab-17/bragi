@@ -1,9 +1,8 @@
-name: Test & publish code coverage
+name: Publish coverage
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
 
 jobs:
   build:
@@ -28,7 +27,7 @@ jobs:
           yarn
 
       - name: Test & publish code coverage 🚀
-        uses: paambaati/codeclimate-action@v2.6.0
+        uses: paambaati/codeclimate-action@v2
         env:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
         with:
