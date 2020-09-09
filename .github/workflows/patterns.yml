@@ -6,6 +6,10 @@ on:
       - master
       - next
       - docs
+  pull_request:
+    branches:
+      - master
+      - next
 
 jobs:
   patterns:
@@ -24,6 +28,22 @@ jobs:
       - name: Lint Commit Messages 🔧
         uses: wagoid/commitlint-github-action@v2
 
+      - name: Cache yarn
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-yarn
+        with:
+          path: ~/.yarn/berry/cache
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Cache npm
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-npm
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+
       - name: Use Node.js ${{ matrix.node-version }} 🔧
         uses: actions/setup-node@v1
         with:
@@ -39,9 +59,3 @@ jobs:
 
       - name: Verify tests and coverage 🔧
         run: yarn coverage
-
-      - name: Release 🚀
-        env:
-          GH_TOKEN: ${{secrets.GH_TOKEN}}
-          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
-        run: yarn release -d
