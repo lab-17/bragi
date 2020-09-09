@@ -1,4 +1,4 @@
-name: Verify project patterns
+name: Verify project patterns 👮
 
 on:
   push:
@@ -21,10 +21,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Lint Commit Messages 🔧
+      - name: Lint commit messages 🕵️
         uses: wagoid/commitlint-github-action@v2
 
-      - name: Cache yarn
+      - name: Use cache Yarn 🚚
         uses: actions/cache@v2
         env:
           cache-name: cache-yarn
@@ -32,7 +32,7 @@ jobs:
           path: ~/.yarn/berry/cache
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Cache npm
+      - name: Use cache NPM 🚚
         uses: actions/cache@v2
         env:
           cache-name: cache-npm
@@ -40,18 +40,18 @@ jobs:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Use Node.js ${{ matrix.node-version }} 🔧
+      - name: Use Node.js ${{ matrix.node-version }} 🧰
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install 🔧
+      - name: Install dependencies 🔧
         run: |
           npm i -g yarn
           yarn
 
-      - name: Lint code style 🔧
+      - name: Lint code style 🕵️
         run: yarn lint
 
-      - name: Verify tests and coverage 🔧
+      - name: Run tests 🧪
         run: yarn coverage

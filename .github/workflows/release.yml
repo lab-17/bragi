@@ -1,4 +1,4 @@
-name: Release NPM & GitHub
+name: Release NPM & GitHub 🚀
 
 on:
   push:
@@ -21,7 +21,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Cache yarn
+      - name: Use cache Yarn 🚚
         uses: actions/cache@v2
         env:
           cache-name: cache-yarn
@@ -29,7 +29,7 @@ jobs:
           path: ~/.yarn/berry/cache
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Cache npm
+      - name: Use cache NPM 🚚
         uses: actions/cache@v2
         env:
           cache-name: cache-npm
@@ -37,28 +37,53 @@ jobs:
           path: ~/.npm
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Use Node.js ${{ matrix.node-version }} 🔧
+      - name: Use Node.js ${{ matrix.node-version }} 🧰
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install 🔧
+      - name: Install dependencies 🔧
         run: |
           npm i -g yarn
           yarn
 
-      - name: Lint code style 🔧
+      - name: Lint code style 🕵️
         run: yarn lint
 
-      - name: Verify tests and coverage 🔧
+      - name: Generate coverage report 🖨️
         run: yarn coverage
 
-      - name: Build 🔧
+      - name: Publish coverage report 🚀
+        if: github.ref == 'refs/heads/master'
+        uses: paambaati/codeclimate-action@v2.6.0
+        env:
+          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+        with:
+          coverageCommand: exit 0
+          coverageLocations: |
+            ${{github.workspace}}/coverage/lcov.info:lcov
+
+      - name: Build package 🏗️
         run: |
           yarn build
 
-      - name: Release 🚀
+      - name: Release package 🚀
         env:
           GH_TOKEN: ${{secrets.GH_TOKEN}}
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
         run: yarn release -d
+
+      - name: Build documentation 🏗️
+        run: |
+          yarn docs
+          touch docs/.nojekyll
+
+      - name: Deploy documentation 🚀
+        if: github.ref == 'refs/heads/master'
+        uses: JamesIves/github-pages-deploy-action@3.5.9
+        with:
+          ACCESS_TOKEN: ${{ secrets.GH_TOKEN }}
+          GIT_CONFIG_NAME: 'Vinícius Carvalho'
+          GIT_CONFIG_EMAIL: 'vinicius@criptext.com'
+          BRANCH: docs
+          FOLDER: docs
