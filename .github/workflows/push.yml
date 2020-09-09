@@ -20,6 +20,8 @@ jobs:
 
       - name: Lint Commit Messages 🔧
         uses: wagoid/commitlint-github-action@v2
+        with:
+          fetch-depth: 0
 
       - name: Use Node.js ${{ matrix.node-version }} 🔧
         uses: actions/setup-node@v1
