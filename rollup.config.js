@@ -96,7 +96,7 @@ function createNodeOutputConfig({ format, browsers, node, exports }) {
     }
 }
 
-function createBrowserOutputConfig({ name, format, modules, browsers, exports }) {
+function createBrowserOutputConfig({ name, format, modules, browsers }) {
     const babelPlugin = babel({
         allowAllFormats: true,
         presets: [
