@@ -65,8 +65,6 @@ const browsers = {
     ].map(createBrowserOutputConfig),
 }
 
-console.log(JSON.stringify([node, typeDefinitions, browsers], null, 2))
-
 export default [node, typeDefinitions, browsers]
 
 function createNodeOutputConfig({ format, browsers, node, exports }) {
