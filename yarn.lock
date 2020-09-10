@@ -1664,7 +1664,7 @@ __metadata:
     "@rollup/plugin-typescript": ^6.0.0
     "@tsconfig/recommended": ^1.0.1
     "@types/jest": ^26.0.13
-    "@types/node": ^14.6.4
+    "@types/node": ^14.10.0
     "@typescript-eslint/eslint-plugin": ^4.1.0
     "@typescript-eslint/parser": ^4.1.0
     commitizen: ^4.2.1
@@ -1678,8 +1678,8 @@ __metadata:
     rollup-plugin-dts: ^1.4.13
     rollup-plugin-terser: ^7.0.2
     semantic-release: ^17.1.1
-    standardized-audio-context: ^25.0.1
-    standardized-audio-context-mock: ^8.3.19
+    standardized-audio-context: ^25.0.2
+    standardized-audio-context-mock: ^8.3.20
     ts-jest: ^26.3.0
     tslib: ^2.0.1
     typedoc: ^0.19.1
@@ -2189,10 +2189,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:^14.6.4":
+"@types/node@npm:*, @types/node@npm:>= 8":
   version: 14.6.4
   resolution: "@types/node@npm:14.6.4"
   checksum: bff274e362080628c96e51b1948be668b68117e35d6353691c753052e490efc0934a0c0a3ba5d2739ac70e745932a9f6b049b7d01a1d96c9ae0c93c3b1b88ed0
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^14.10.0":
+  version: 14.10.0
+  resolution: "@types/node@npm:14.10.0"
+  checksum: 03093b4991611c31b80e836d06359391a76f4bd8ff12d0286fc7da7b994612e60c503b0b6fece8983c6ab2cec3921f69f480386c293882b68edab90ce0f12564
   languageName: node
   linkType: hard
 
@@ -10718,17 +10725,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"standardized-audio-context-mock@npm:^8.3.19":
-  version: 8.3.19
-  resolution: "standardized-audio-context-mock@npm:8.3.19"
+"standardized-audio-context-mock@npm:^8.3.20":
+  version: 8.3.20
+  resolution: "standardized-audio-context-mock@npm:8.3.20"
   dependencies:
     "@babel/runtime": ^7.11.2
-    automation-events: ^2.0.19
+    automation-events: ^3.0.0
     sinon: ^9.0.3
     standardized-audio-context: ^24.1.26
     tslib: ^2.0.1
-    vehicles: ^6.0.17
-  checksum: de84d7144eabc1c5cae440ea144f8b1c8587ac155207ebf57038c7ad4b2e51d0eb6f1431c7dccf5035bafe5111811a12ae58eae2c84028c91f2153b09b59acd9
+    vehicles: ^6.0.18
+  checksum: 3b96cc64d68b37b3c377d019aa6c2594911a6e93ffdc9a66b3d42025fa825b09dd5c1d262a2ce85b700db3fda3aa2a0c166b2628e544eb42aa3cd25f3f912a59
   languageName: node
   linkType: hard
 
@@ -10743,14 +10750,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"standardized-audio-context@npm:^25.0.1":
-  version: 25.0.1
-  resolution: "standardized-audio-context@npm:25.0.1"
+"standardized-audio-context@npm:^25.0.2":
+  version: 25.0.2
+  resolution: "standardized-audio-context@npm:25.0.2"
   dependencies:
     "@babel/runtime": ^7.11.2
     automation-events: ^3.0.0
     tslib: ^2.0.1
-  checksum: 84716d9432be6f8a79820428b6e22589a79e2a57228dcad0b524ce4cf12f5be437e8a48ea8de022d1a4ead56359f9b1e1f0cd3e3bb26ff9aa54d88a7bccfeb7d
+  checksum: d72b3338eb67cd03f81c2aceb015778fdcf402d6cafa5018d1ce4e4e191c0a32ae75407f5a83ab5db114a0d3c018a7b10d5e3f823f761eb6698350427f525c24
   languageName: node
   linkType: hard
 
@@ -11830,14 +11837,14 @@ typescript@^4.0.2:
   languageName: node
   linkType: hard
 
-"vehicles@npm:^6.0.17":
-  version: 6.0.17
-  resolution: "vehicles@npm:6.0.17"
+"vehicles@npm:^6.0.18":
+  version: 6.0.18
+  resolution: "vehicles@npm:6.0.18"
   dependencies:
     "@babel/runtime": ^7.11.2
     decimal.js: ^10.2.0
     tslib: ^2.0.1
-  checksum: 96888d3e2c53182f26d3141ab71b2247f11f483d71a1852acbfc2001151f45d1cf122471f39717104fb095aef228abaf103642ce5be9e67e6f319852a0f15865
+  checksum: cb7705df33b75951ed19f06deb310879bd53b14f88049ec73382872ccb3b7dbb5acee9b09a2ef113dea58a579d2e68086234338cfe6d3436942941c383c623a4
   languageName: node
   linkType: hard
 
