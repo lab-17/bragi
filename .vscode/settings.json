@@ -5,12 +5,12 @@
     "coverage/**": true
   },
   "files.exclude": {
-    // ".*": true,
-    // "*.config.js": true,
-    // "FUNDING.yml": true,
-    // "yarn.lock": true,
-    // "tsconfig.json": true,
-    // "typedoc.json": true
+    ".*": true,
+    "*.config.js": true,
+    "FUNDING.yml": true,
+    "yarn.lock": true,
+    "tsconfig.json": true,
+    "typedoc.json": true
   },
   "eslint.nodePath": ".yarn/sdks",
   "prettier.prettierPath": ".yarn/sdks/prettier/index.js",
