@@ -1952,7 +1952,6 @@ __metadata:
     "@tsconfig/recommended": ^1.0.1
     "@types/browserify": ^12.0.36
     "@types/jest": ^26.0.13
-    "@types/mkdirp": ^1
     "@types/node": ^14.10.1
     "@types/rimraf": ^3.0.0
     "@typescript-eslint/eslint-plugin": ^4.1.0
@@ -1966,7 +1965,6 @@ __metadata:
     husky: ^4.3.0
     jest: ^26.4.2
     lint-staged: ^10.3.0
-    mkdirp: ^1.0.4
     npm-run-all: ^4.1.5
     nyc: ^15.1.0
     prettier: ^2.1.1
@@ -2584,15 +2582,6 @@ __metadata:
   version: 1.2.0
   resolution: "@types/minimist@npm:1.2.0"
   checksum: 098945c2c29df019cae250dfe614e50dab8120f4e359bd034190f931a63a23f3058764eec0d8cea3757eedd5b308ed28e4357ece9510a99380da08762f5f6635
-  languageName: node
-  linkType: hard
-
-"@types/mkdirp@npm:^1":
-  version: 1.0.1
-  resolution: "@types/mkdirp@npm:1.0.1"
-  dependencies:
-    "@types/node": "*"
-  checksum: 075e821a8fe69349a3b642f798b4632139982f039c8890b83bcd9068bfac3787dd536c9f3bb18bb3f9c68277431514b38e6c57509cdb766c8d7ebff9a1427ecb
   languageName: node
   linkType: hard
 
@@ -10031,7 +10020,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"mkdirp@npm:1.x, mkdirp@npm:^1.0.3, mkdirp@npm:^1.0.4":
+"mkdirp@npm:1.x, mkdirp@npm:^1.0.3":
   version: 1.0.4
   resolution: "mkdirp@npm:1.0.4"
   bin:
