@@ -5,15 +5,15 @@
     "coverage/**": true
   },
   "files.exclude": {
-    // ".*": true,
-    // "*.config.js": true,
-    // "**/tsconfig.json": true,
-    // "yarn.lock": true,
-    // "typedoc.json": true,
-    // "cypress.json": true,
-    // "node_modules": true,
-    // "e2e/plugins": true,
-    // "e2e/support": true
+    ".*": true,
+    "*.config.js": true,
+    "**/tsconfig.json": true,
+    "yarn.lock": true,
+    "typedoc.json": true,
+    "cypress.json": true,
+    "node_modules": true,
+    "e2e/plugins": true,
+    "e2e/support": true
   },
   /*
    * Fix incompatibility between Cypress and Yarn 2 @see: https://github.com/cypress-io/cypress/issues/6377#issuecomment-596747627
