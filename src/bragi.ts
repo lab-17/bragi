@@ -34,32 +34,45 @@ export class Bragi {
     constructor(options: BragiOptions = {}) {
         const currentOptions = { ...this.defaultOptions, ...options }
 
-        const { autoUnlock, ponyfill } = currentOptions
+        const { autoUnlock } = currentOptions
 
-        if (this.isServer && !ponyfill)
-            throw new Error(
-                'Ponyfill is required in not browser environments, please add ponyfills.',
-            )
+        const ponyfill = this.verifySsr(currentOptions.ponyfill)
 
-        this.unsafe = this.isBrowser ? window : ponyfill?.window ?? {}
-        this.safe = this.ponifyWebApis(ponyfill ?? {})
+        this.unsafe = this.verifyWindow(ponyfill)
+        this.safe = this.ponifyWebApis(ponyfill)
 
         if (this.isServer) this.unlock()
         else if (autoUnlock) this.addUnlockListeners()
+    }
+
+    private verifySsr(ponyfill: BragiOptions['ponyfill']) {
+        if (this.isServer && !ponyfill) {
+            throw new Error(
+                'Ponyfill is required in not browser environments, please add ponyfills.',
+            )
+        }
+
+        return ponyfill ?? {}
+    }
+
+    private verifyWindow(ponyfill: BragiOptions['ponyfill']) {
+        return this.isBrowser ? window : ponyfill?.window ?? {}
+    }
+
+    private verifyPonyfill<T extends keyof BragiPonyfills>(api: T, impl?: BragiPonyfills[T]) {
+        if (!impl)
+            throw this.isBrowser
+                ? new Error(`This browser not have support to ${api}, please add a ponyfill.`)
+                : new Error(`This runtime not have support to ${api}, please add a ponyfill.`)
+
+        return impl
     }
 
     private ponifyWebApis(options: BragiPonyfillOptions): BragiPonyfills {
         const ponyfill = {} as BragiPonyfills
 
         this.usedWebApis.forEach((api) => {
-            const impl = options[api] ?? this.unsafe[api]
-
-            if (!impl)
-                throw this.isBrowser
-                    ? new Error(`This browser not have support to ${api}, please add a ponyfill.`)
-                    : new Error(`This runtime not have support to ${api}, please add a ponyfill.`)
-
-            ponyfill[api] = impl
+            ponyfill[api] = this.verifyPonyfill(api, options[api] ?? this.unsafe[api])
         })
 
         return ponyfill
@@ -116,6 +129,7 @@ export class Bragi {
         this.stop(symbol)
         this.audios.delete(symbol)
     }
+
     public removeSources(symbols: symbol[]): void {
         symbols.forEach((symbol) => {
             this.removeSource(symbol)
