@@ -12,8 +12,10 @@ export interface BragiSourceOptions {
     url: string
 }
 
+export type BragiWindow = typeof window | Partial<typeof window>
 export interface BragiOptions {
     ponyfill?: BragiPonyfillOptions
+    window?: BragiWindow
 }
 
 export interface BragiPonyfills {

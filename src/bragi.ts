@@ -6,6 +6,7 @@ import {
     BragiPonyfillOptions,
     BragiController,
     BragiSourceOptions,
+    BragiWindow,
 } from './types'
 
 export class Bragi {
@@ -17,25 +18,34 @@ export class Bragi {
     private audios = new Map<symbol, BragiController>()
 
     private context?: IAudioContext | AudioContext
-    private safe: BragiPonyfills
 
-    readonly isBrowser = typeof window !== undefined
+    readonly unsafe: BragiWindow
+    readonly safe: BragiPonyfills
+
+    readonly isBrowser = typeof window !== 'undefined'
+    readonly isServer = !this.isBrowser
     readonly usedWebApis: (keyof BragiPonyfills)[] = ['AudioContext']
     readonly unlockEvents = ['touchstart', 'touchend', 'keydown', 'keyup', 'click']
     readonly listenerOptions = { passive: true }
     readonly defaultOptions = {
         autoUnlock: this.isBrowser,
-        ponyfill: {},
+        window: {},
     }
 
     constructor(options: BragiOptions = {}) {
         const currentOptions = { ...this.defaultOptions, ...options }
 
-        const { autoUnlock, ponyfill } = currentOptions
+        const { autoUnlock, ponyfill, window: windowPonyfill } = currentOptions
 
-        this.safe = this.ponifyWebApis(ponyfill)
+        if (this.isServer && !ponyfill)
+            throw new Error(
+                'Ponyfill is required in not browser environments, please add ponyfills.',
+            )
 
-        if (!this.isBrowser) this.unlock()
+        this.unsafe = this.isBrowser ? window : windowPonyfill
+        this.safe = this.ponifyWebApis(ponyfill ?? {})
+
+        if (this.isServer) this.unlock()
         else if (autoUnlock) this.addUnlockListeners()
     }
 
@@ -43,7 +53,7 @@ export class Bragi {
         const ponyfill = {} as BragiPonyfills
 
         this.usedWebApis.forEach((api) => {
-            const impl = options[api] ?? window[api]
+            const impl = options[api] ?? this.unsafe[api]
 
             if (!impl)
                 throw this.isBrowser
@@ -53,7 +63,7 @@ export class Bragi {
             ponyfill[api] = impl
         })
 
-        return ponyfill as BragiPonyfills
+        return ponyfill
     }
 
     private addUnlockListeners(): void {
@@ -62,13 +72,16 @@ export class Bragi {
         this.listening = true
 
         this.unlockEvents.forEach((eventName) =>
-            addEventListener(eventName, this.unlock, this.listenerOptions),
+            this.unsafe.addEventListener?.(eventName, this.unlock, this.listenerOptions),
         )
     }
+
     private removeUnlockListeners(): void {
         if (!this.listening) return
 
-        this.unlockEvents.forEach((eventName) => removeEventListener(eventName, this.unlock))
+        this.unlockEvents.forEach((eventName) =>
+            this.unsafe.removeEventListener?.(eventName, this.unlock),
+        )
     }
 
     private unlock(): void {
