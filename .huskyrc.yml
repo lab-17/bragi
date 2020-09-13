@@ -1,4 +1,5 @@
 hooks:
   prepare-commit-msg: exec < /dev/tty && cz --hook || true
-  pre-commit: lint-staged && yarn coverage
+  pre-commit: lint-staged && jest
+  pre-push: yarn coverage
   commit-msg: commitlint -E HUSKY_GIT_PARAMS
