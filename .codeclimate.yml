@@ -30,4 +30,3 @@ plugins:
 exclude_patterns:
   - '.yarn/'
   - 'yarn.lock'
-  - '**/*.spec.ts'

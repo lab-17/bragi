@@ -5,6 +5,8 @@
 !.vscode/**/
 !.vim/**/
 !.github/**/
+!e2e/**/
+!tests/**/
 
 !*.ts
 !*.js

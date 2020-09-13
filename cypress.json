@@ -1,0 +1,12 @@
+{
+  "testFiles": "**/*.spec.ts",
+  "integrationFolder": "tests/client",
+  "fixturesFolder": "e2e/fixtures",
+  "screenshotsFolder": "e2e/screenshots",
+  "videosFolder": "e2e/videos",
+  "componentFolder": "e2e/component",
+  "pluginsFile": "e2e/plugins/index.ts",
+  "supportFile": "e2e/support/index.ts",
+  "nodeVersion": "system",
+  "projectId": "n557z4"
+}

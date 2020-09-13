@@ -1,5 +1,3 @@
 {
-  "eslint.packageManager": "yarn",
-  "eslint.nodePath": ".yarn/sdks",
-  "tsserver.tsdk": ".yarn/sdks/typescript/lib"
+  "eslint.packageManager": "yarn"
 }

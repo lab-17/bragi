@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "types": ["cypress", "node", "browserify"]
+  },
+  "include": ["./**/*.ts"]
+}

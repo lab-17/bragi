@@ -54,5 +54,13 @@
 !.yarn/versions/**
 /.pnp.*
 
+!e2e/
+!e2e/**/
+!e2e/tsconfig.json
+
+!tests/
+!tests/**/
+!tests/**/tsconfig.json
+
 # Remove npm in favor of Yarn 2
 package-lock.json

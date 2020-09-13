@@ -10,6 +10,10 @@ const [, filename] = name.split('/')
 const input = './src/index.ts'
 const outputDir = './lib'
 
+const compilerOptions = {
+    sourceMap: true,
+}
+
 const commonConfig = {
     preferConst: true,
     sourcemap: true,
@@ -27,13 +31,13 @@ const browserConfig = {
 const banedSupport = 'not dead and not op_mini all and not ie 11'
 const legacySupport = `cover 99.5% and ${banedSupport}`
 const modernSupport = `${legacySupport} and supports es6-module`
-const nextSupport = `${modernSupport} and >=0.2% and last 3 major versions and last 5 versions`
+export const nextSupport = `${modernSupport} and >=0.2% and last 3 major versions and last 5 versions`
 
 const nodeLegacySupport = 'maintained node versions'
 
 const node = {
     input,
-    plugins: [typescript(), strip()],
+    plugins: [typescript(compilerOptions), strip()],
     output: [
         { format: 'esm', browsers: nextSupport, node: true },
         { format: 'cjs', exports: 'named' },
@@ -56,7 +60,7 @@ const typeDefinitions = {
 
 const browsers = {
     input,
-    plugins: [typescript(), strip(), terser()],
+    plugins: [typescript(compilerOptions), strip(), terser()],
     output: [
         { format: 'esm', modules: 'auto', browsers: modernSupport },
         { name: filename, format: 'umd' },
@@ -72,7 +76,7 @@ function createNodeOutputConfig({ format, browsers, node, exports }) {
         browsers: browsers ?? nodeLegacySupport,
     }
 
-    if (node) targets.node = node
+    if (node) targets['node'] = node
 
     return {
         ...nodeConfig,

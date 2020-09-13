@@ -3,11 +3,11 @@
   "compilerOptions": {
     "noEmit": true,
     "removeComments": true,
-    "sourceMap": true,
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "node",
     "lib": ["DOM", "ESNext", "WebWorker"],
+    "types": ["jest"],
     "alwaysStrict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
@@ -16,6 +16,6 @@
     // "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules", "lib"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }
