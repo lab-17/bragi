@@ -29,20 +29,19 @@ export class Bragi {
     readonly listenerOptions = { passive: true }
     readonly defaultOptions = {
         autoUnlock: this.isBrowser,
-        window: {},
     }
 
     constructor(options: BragiOptions = {}) {
         const currentOptions = { ...this.defaultOptions, ...options }
 
-        const { autoUnlock, ponyfill, window: windowPonyfill } = currentOptions
+        const { autoUnlock, ponyfill } = currentOptions
 
         if (this.isServer && !ponyfill)
             throw new Error(
                 'Ponyfill is required in not browser environments, please add ponyfills.',
             )
 
-        this.unsafe = this.isBrowser ? window : windowPonyfill
+        this.unsafe = this.isBrowser ? window : ponyfill?.window ?? {}
         this.safe = this.ponifyWebApis(ponyfill ?? {})
 
         if (this.isServer) this.unlock()
