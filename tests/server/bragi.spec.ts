@@ -1,7 +1,7 @@
 import { AudioContext } from 'standardized-audio-context-mock'
-import BragiDefault, { Bragi } from '.'
+import BragiDefault, { Bragi } from '../../src'
 
-describe('Bragi Integration Tests', () => {
+describe('Root Integration tests', () => {
     it('should Bragi is named exported', () => {
         expect(Bragi).toBeDefined()
     })
@@ -12,7 +12,7 @@ describe('Bragi Integration Tests', () => {
 
     it('should Bragi throw not supported environment', () => {
         expect(() => new Bragi()).toThrowError(
-            `This browser not have support to AudioContext, please add a ponyfill.`,
+            'Ponyfill is required in not browser environments, please add ponyfills.',
         )
     })
 
@@ -20,5 +20,3 @@ describe('Bragi Integration Tests', () => {
         expect(new Bragi({ ponyfill: { AudioContext } })).toBeInstanceOf(Bragi)
     })
 })
-
-// describe('Bragi Unit Tests', () => {})
