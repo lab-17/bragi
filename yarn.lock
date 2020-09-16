@@ -1951,25 +1951,25 @@ __metadata:
     "@testing-library/cypress": ^7.0.0
     "@tsconfig/recommended": ^1.0.1
     "@types/browserify": ^12.0.36
-    "@types/jest": ^26.0.13
-    "@types/node": ^14.10.1
+    "@types/jest": ^26.0.14
+    "@types/node": ^14.10.3
     "@types/rimraf": ^3.0.0
     "@typescript-eslint/eslint-plugin": ^4.1.1
     "@typescript-eslint/parser": ^4.1.1
     babel-plugin-istanbul: ^6.0.0
     commitizen: ^4.2.1
     cpy-cli: ^3.1.1
-    cypress: ^5.1.0
+    cypress: ^5.2.0
     cz-conventional-changelog: ^3.3.0
     eslint: ^7.9.0
     husky: ^4.3.0
     jest: ^26.4.2
-    lint-staged: ^10.3.0
+    lint-staged: ^10.4.0
     npm-run-all: ^4.1.5
     nyc: ^15.1.0
-    prettier: ^2.1.1
+    prettier: ^2.1.2
     rimraf: ^3.0.2
-    rollup: ^2.26.11
+    rollup: ^2.27.0
     rollup-plugin-dts: ^1.4.13
     rollup-plugin-terser: ^7.0.2
     semantic-release: ^17.1.1
@@ -2545,13 +2545,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:26.x, @types/jest@npm:^26.0.13":
+"@types/jest@npm:26.x":
   version: 26.0.13
   resolution: "@types/jest@npm:26.0.13"
   dependencies:
     jest-diff: ^25.2.1
     pretty-format: ^25.2.1
   checksum: 5476d59a99d1552d3ef99179d9ab8a59b24434c1990fda0836b8e6899a6a5fe898b62c0f0b8c9d3308b5c652cb95fca0b3b404028379b306f123a1e872413498
+  languageName: node
+  linkType: hard
+
+"@types/jest@npm:^26.0.14":
+  version: 26.0.14
+  resolution: "@types/jest@npm:26.0.14"
+  dependencies:
+    jest-diff: ^25.2.1
+    pretty-format: ^25.2.1
+  checksum: bddbe82d12217c5217efabcad09e4fbe2c5eaecf9392da9b0edbe4c3d9fb240b3fab914f88c5f3708f6d5046640a2782458944873eae4ac01abcb17d32d3c78f
   languageName: node
   linkType: hard
 
@@ -2592,10 +2602,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^14.10.1":
-  version: 14.10.1
-  resolution: "@types/node@npm:14.10.1"
-  checksum: 086b4baffc1f13eee84fb4ff072d685b3fecad59f4166c4367f1ab0db6aa30fc81cf67e6469775072b51126c52bcfec40bae6fafef4e4dc8f4c42f94211e28f4
+"@types/node@npm:^14.10.3":
+  version: 14.10.3
+  resolution: "@types/node@npm:14.10.3"
+  checksum: 0411c026e894fb2485b4f625e4cfa00e16844f074e5d926458bea1b29daace01730c059a60d625f2ce04c79719e29afdb0276db7a81cb6675c9290251662c474
   languageName: node
   linkType: hard
 
@@ -4970,9 +4980,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "cypress@npm:5.1.0"
+"cypress@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "cypress@npm:5.2.0"
   dependencies:
     "@cypress/listr-verbose-renderer": ^0.4.1
     "@cypress/request": ^2.88.5
@@ -5014,7 +5024,7 @@ __metadata:
     yauzl: ^2.10.0
   bin:
     cypress: bin/cypress
-  checksum: ed4b5123a5701121a678a5d99ddfc5f31ee200626b7f5170109519e717a8a96138a33bca9da69e2f5ef48b72c85ca3d4f7e742e43f07d30cbf7066c4355d776e
+  checksum: ffb39d28e324ea1fa6d5494c90522860bffaacde84531eebe0407b8f311e96001ad86d3170375510ded34c9e6b320a46037484cfd6efc0936da6b0bf92b88c40
   languageName: node
   linkType: hard
 
@@ -9098,9 +9108,9 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:^10.3.0":
-  version: 10.3.0
-  resolution: "lint-staged@npm:10.3.0"
+"lint-staged@npm:^10.4.0":
+  version: 10.4.0
+  resolution: "lint-staged@npm:10.4.0"
   dependencies:
     chalk: ^4.1.0
     cli-truncate: ^2.1.0
@@ -9119,7 +9129,7 @@ fsevents@^1.2.7:
     stringify-object: ^3.3.0
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 1e8bfa56f4aa817892032fd42cd47dd554121c4f22643a1f11e1879c638784664d83600f2f2304123b89354e8a3365f28435cbe654f92aaa0b6186df99355a00
+  checksum: e648011a6d29744072dab599a17075e0590e7f8722cf3138b40f32106247056de9a873afc87b522a04eb9ed2b2511d09ab838ce028b744231a7030874cf850ac
   languageName: node
   linkType: hard
 
@@ -11516,12 +11526,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "prettier@npm:2.1.1"
+"prettier@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "prettier@npm:2.1.2"
   bin:
     prettier: bin-prettier.js
-  checksum: 420a807cda2d482388daa42379a7aaa1be629cb71f5792362a971a5ed1c6ff377d2e311818d24e9390a4a8a6eac3fda9ebe6975f2168efec893790c0497d8a93
+  checksum: bedc24c568efbcfe45f255558900777e2fabb36bf28ed4c22d2456eb22dfb012d12e566a46472ea5b857a4e9f263e888f7e316527d00bb58188f1820b0b0031a
   languageName: node
   linkType: hard
 
@@ -12478,9 +12488,9 @@ resolve@1.1.7:
   languageName: node
   linkType: hard
 
-"rollup@npm:^2.26.11":
-  version: 2.26.11
-  resolution: "rollup@npm:2.26.11"
+"rollup@npm:^2.27.0":
+  version: 2.27.0
+  resolution: "rollup@npm:2.27.0"
   dependencies:
     fsevents: ~2.1.2
   dependenciesMeta:
@@ -12488,7 +12498,7 @@ resolve@1.1.7:
       optional: true
   bin:
     rollup: dist/bin/rollup
-  checksum: 65759710ab819fb724ec4a20e49395321690626e86194729312e5355fc3b14c7c3f0f8104129b3864f66bd472b32bbcad065655f0cabf4c5c4786436658eb894
+  checksum: fefde079e4f84176e2b344a449e867e8e5c5292fa76f5f7834c7e987b5a9fc7d48f8707a6977fd663ddc59dee017ae6a80d575771c47878434cb005bca13e2cf
   languageName: node
   linkType: hard
 
