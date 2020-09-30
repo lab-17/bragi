@@ -15,6 +15,7 @@
 !*.ts
 !*.tsx
 !*.js
+!*.css
 !*.md
 !*.mdx
 !*.json
