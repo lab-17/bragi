@@ -1,0 +1,49 @@
+{
+  "name": "@lab17/bragi",
+  "version": "0.0.0",
+  "description": "A audio library for the web.",
+  "license": "MIT",
+  "author": {
+    "name": "Vinícius Carvalho",
+    "email": "vinicius@criptext.com",
+    "url": "https://github.com/Oak-V"
+  },
+  "contributors": [],
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lab-17/bragi.git",
+    "directory": "packages/bragi"
+  },
+  "main": "lib/cjs/index.js",
+  "browser": "lib/bundle/bragi.esm.js",
+  "module": "lib/esm/index.js",
+  "types": "lib/types/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "keywords": [
+    "bragi",
+    "bragi.js",
+    "audio",
+    "sound",
+    "stream",
+    "web audio",
+    "webaudio",
+    "browser",
+    "html5",
+    "html5 audio",
+    "audio sprite",
+    "audiosprite",
+    "audio stream",
+    "audiostream"
+  ],
+  "optionalDependencies": {
+    "standardized-audio-context": "^25.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
