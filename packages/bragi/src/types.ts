@@ -34,3 +34,9 @@ export type TBragiValidatedCodecs<T extends string | number | symbol> = {
 export interface IBragiSourceController {
     a: () => any
 }
+
+export interface IBragiRunner {
+    verify?: () => void
+    inAll: (is: boolean) => void
+    inSelection: (target: symbol) => void
+}

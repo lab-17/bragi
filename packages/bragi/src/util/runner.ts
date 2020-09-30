@@ -1,21 +1,13 @@
-import { TBragiRunInSelection, TBragiRunMaybeInAll } from '../types'
+import { IBragiRunner, TBragiRunInSelection, TBragiRunMaybeInAll } from '../types'
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function createRunner(methods: {
-    verify?: () => void
-    inAll: (is: boolean) => void
-    inSelection: (target: symbol) => void
-}) {
+export function createRunner(methods: IBragiRunner) {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     return (first: TBragiRunMaybeInAll, ...targets: TBragiRunInSelection) =>
         run(methods, first, targets)
 }
 function run(
-    methods: {
-        verify?: () => void
-        inAll: (is: boolean) => void
-        inSelection: (target: symbol) => void
-    },
+    methods: IBragiRunner,
     first: TBragiRunMaybeInAll,
     targets: TBragiRunInSelection,
 ): void {
