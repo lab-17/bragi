@@ -4,7 +4,7 @@ module.exports = {
     collectCoverage: true,
     coverageDirectory: 'coverage/server',
     coverageReporters: ['json'],
-    collectCoverageFrom: ['src/**/*.ts'],
+    collectCoverageFrom: ['packages/**/src/**/*.ts'],
     testRegex: ['/tests/server/.*\\.spec\\.ts$'],
     coveragePathIgnorePatterns: [`(\\/|\\.)types\\.ts$`],
     watchPathIgnorePatterns: [

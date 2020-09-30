@@ -1,18 +1,37 @@
+# Ignore all
 *
 
-!src/**/
-!audio/**/
+# Except folders
+!packages/**/
+!static/**/
 !.vscode/**/
 !.vim/**/
 !.github/**/
 !e2e/**/
 !tests/**/
+!www/**/
 
+# Except extensions
 !*.ts
+!*.tsx
 !*.js
 !*.md
+!*.mdx
 !*.json
 !*.yml
 
+# Always ignore distribution folder
+lib/
+
+# Always ignore not allowed JavaScript files
+packages/**/src/*.js
+
+# Always ignore static SVG files
+static/img/*.svg
+
+# Always ignore Yarn 2 Plug aNd Play files
 /.pnp.*
+
+# Always ignore modules folder
+node_modules/
 

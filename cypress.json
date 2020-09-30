@@ -1,5 +1,5 @@
 {
-  "testFiles": "**/*.spec.ts",
+  "testFiles": ["**/*.spec.ts", "**/*.e2e.ts"],
   "integrationFolder": "tests/client",
   "fixturesFolder": "e2e/fixtures",
   "screenshotsFolder": "e2e/screenshots",

@@ -1,4 +1,4 @@
-import { nextSupport } from '../../rollup.config'
+import { nextSupport } from '../../packages/bragi/rollup.config'
 import useBrowserify from '@cypress/browserify-preprocessor'
 import { BrowserifyObject } from 'browserify'
 

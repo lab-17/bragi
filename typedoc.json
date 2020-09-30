@@ -1,8 +1,0 @@
-{
-  "name": "Bragi",
-  "mode": "file",
-  "out": "./docs",
-  "includes": "./src",
-  "readme": "./README.md",
-  "exclude": "**/*.spec.ts"
-}

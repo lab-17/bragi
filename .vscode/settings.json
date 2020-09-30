@@ -1,17 +1,18 @@
 {
   "search.exclude": {
-    "lib/**": true,
+    "**/lib/**": true,
+    "**/node_modules/**": true,
     "docs/**": true,
     "coverage/**": true
   },
   "files.exclude": {
-    ".*": true,
-    "*.config.js": true,
+    "**/.*": true,
+    "**/*.config.js": true,
     "**/tsconfig.json": true,
+    "**/node_modules": true,
     "yarn.lock": true,
-    "typedoc.json": true,
+    "lerna.json": true,
     "cypress.json": true,
-    "node_modules": true,
     "e2e/plugins": true,
     "e2e/support": true
   },

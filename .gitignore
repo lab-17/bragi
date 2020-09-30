@@ -4,17 +4,37 @@
 # Global allowed extensions
 !*.ts
 
-# Global allowed files
-!.gitkeep
-
 # Allowed folders
-!src/
-!src/**/
-!audio/
+!static/
+!static/**/
+!packages/
+!packages/**/
+!www/
+!www/**/
+!tests/
+!tests/**/
 
-# Allowed audio files
-!audio/*.md
-!audio/*.mp3
+# Allowed in packages folder
+!packages/*/package.json
+!packages/*/README.md
+!packages/*/*.js
+
+# Allowed in static folder
+!static/**/*.md
+!static/audio/*.mp3
+!static/img/*.ico
+!static/img/*.svg
+
+# Allowed in www folder
+!www/LICENSE.md
+!www/**/*.mdx
+!www/*.json
+!www/src/**/*.tsx
+!www/src/custom.css
+!www/src/sidebar.js
+
+# Allowed in tests folder
+!tests/**/tsconfig.json
 
 # Project root allowed extensions
 !/*.js
@@ -54,13 +74,16 @@
 !.yarn/versions/**
 /.pnp.*
 
+# Cypress configs
 !e2e/
 !e2e/**/
 !e2e/tsconfig.json
 
-!tests/
-!tests/**/
-!tests/**/tsconfig.json
-
-# Remove npm in favor of Yarn 2
+# Remove NPM's lock file in favor of Yarn's lock file
 package-lock.json
+
+# Always ignore modules folder
+node_modules/
+
+# Always ignore distribution folder
+lib/

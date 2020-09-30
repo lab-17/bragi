@@ -63,20 +63,19 @@ jobs:
           coverageLocations: |
             ${{github.workspace}}/coverage/lcov.info:lcov
 
-      - name: Build package 🏗️
+      - name: Build packages 🏗️
         run: |
           yarn build
 
-      - name: Release package 🚀
+      - name: Release packages 🚀
         env:
           GH_TOKEN: ${{secrets.GH_TOKEN}}
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
-        run: yarn release -d
+        run: yarn release
 
       - name: Build documentation 🏗️
         run: |
           yarn docs
-          touch docs/.nojekyll
 
       - name: Deploy documentation 🚀
         if: github.ref == 'refs/heads/master'
