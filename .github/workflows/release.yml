@@ -51,6 +51,9 @@ jobs:
         run: yarn lint
 
       - name: Generate coverage report 🖨️
+        env:
+          CYPRESS_VIDEO_RECORDING: ${{secrets.CYPRESS_VIDEO_RECORDING}}
+          CYPRESS_RECORD_KEY: ${{secrets.CYPRESS_RECORD_KEY}}
         run: yarn ci:coverage
 
       - name: Publish coverage report 🚀
