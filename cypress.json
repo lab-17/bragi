@@ -8,5 +8,6 @@
   "pluginsFile": "e2e/plugins/index.ts",
   "supportFile": "e2e/support/index.ts",
   "nodeVersion": "system",
-  "projectId": "n557z4"
+  "projectId": "n557z4",
+  "video": false
 }
