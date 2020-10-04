@@ -1,14 +1,16 @@
-export function remap<T>(that: T): T {
+import { TBragiPonyfill } from '../types'
+
+export function remap<T>(that: T, safe: TBragiPonyfill): T {
     // const prototype = Object.getPrototypeOf(that)
-    Object.keys(that).forEach((key) => {
-        removeUnderscoredAndConfig(key, that)
+    safe.Object.keys(that).forEach((key) => {
+        removeUnderscoredAndConfig(key, that, safe)
     })
 
     return that
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function removeUnderscoredAndConfig(key: string, that: any) {
+function removeUnderscoredAndConfig(key: string, that: any, safe: TBragiPonyfill) {
     const remap = key[0] === '_'
 
     if (remap) {
@@ -16,19 +18,19 @@ function removeUnderscoredAndConfig(key: string, that: any) {
         return
     }
 
-    Object.defineProperty(that, key, {
+    safe.Object.defineProperty(that, key, {
         configurable: false,
         writable: false,
         enumerable: true,
     })
 }
 
-export function freeze<T>(that: T): T {
-    const prototype = Object.getPrototypeOf(that)
+export function freeze<T>(that: T, safe: TBragiPonyfill): T {
+    const prototype = safe.Object.getPrototypeOf(that)
 
-    Object.freeze(that)
+    safe.Object.freeze(that)
 
-    Object.seal(prototype)
+    safe.Object.seal(prototype)
 
     return that
 }

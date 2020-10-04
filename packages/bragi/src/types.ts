@@ -1,5 +1,6 @@
 import { IAudioContext, IAudioNode, TAudioContextConstructor } from 'standardized-audio-context'
-import { TBragiUsedWebApis } from './config'
+import { TBragiSupportedExtension, TBragiUsedWebApis } from './config'
+import { TBragiLoggerLevel } from './util'
 
 export { IBragiCodecsValidator } from './util'
 
@@ -16,12 +17,15 @@ export type TBragiContext = IAudioContext
 export type TBragiNode = IAudioNode<TBragiContext>
 
 export type TBragiPonyfill = Pick<
-    Omit<Window & typeof globalThis, 'AudioContext'> & { AudioContext: TAudioContextConstructor },
+    Omit<Window & typeof globalThis, 'AudioContext' | 'navigator'> & {
+        AudioContext: TAudioContextConstructor
+    } & Pick<Window & typeof globalThis, 'navigator'>['navigator'],
     TBragiUsedWebApis[number]
 >
 
 export interface IBragiOptions {
     ponyfills?: Partial<TBragiPonyfill>
+    logLevel: TBragiLoggerLevel
     autoUnlock: boolean
     muted: boolean
     gain: number
@@ -31,12 +35,8 @@ export type TBragiValidatedCodecs<T extends string | number | symbol> = {
     [keys in T]: boolean
 }
 
-export interface IBragiSourceController {
-    a: () => any
-}
-
-export interface IBragiRunner {
-    verify?: () => void
-    inAll: (is: boolean) => void
-    inSelection: (target: symbol) => void
+export interface IBragiSourceOptions {
+    gain: number
+    preload: boolean
+    origin: string | [TBragiSupportedExtension, string] | [TBragiSupportedExtension, string][]
 }

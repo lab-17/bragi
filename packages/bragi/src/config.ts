@@ -1,4 +1,4 @@
-import { IBragiOptions, TBragiListenerOptions } from './types'
+import { IBragiOptions, IBragiSourceOptions, TBragiListenerOptions } from './types'
 
 export const isBrowser = typeof window !== 'undefined'
 
@@ -26,14 +26,17 @@ export const codecs = {
 
 /* (keyof (Window & typeof globalThis))[] */
 export const usedWebApis = <const>[
-    'addEventListener',
-    'removeEventListener',
-    'AudioContext',
-    'Audio',
-    'fetch',
-    'AbortController',
+    'Error',
     'Map',
     'Symbol',
+    'Promise',
+    'AudioContext',
+    'Audio',
+    'addEventListener',
+    'removeEventListener',
+    'AbortController',
+    'fetch',
+    'Object',
 ]
 
 export const unlockEvents: (keyof WindowEventMap)[] = [
@@ -48,9 +51,16 @@ export const listenerOptions: TBragiListenerOptions = {
     passive: true,
 }
 
-export const defaultOptions: IBragiOptions = {
+export const rootDefaultOptions: IBragiOptions = {
+    logLevel: 'error',
     autoUnlock: isBrowser,
     muted: false,
+    gain: 1.0,
+}
+
+export const sourceDefaultOptions: IBragiSourceOptions = {
+    origin: [],
+    preload: false,
     gain: 1.0,
 }
 

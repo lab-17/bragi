@@ -1,95 +1,123 @@
-import {
-    TBragiContext,
-    TBragiPonyfill,
-    TBragiSupportedExtension,
-    IBragiCodecsValidator,
-} from './types'
+import { IAudioContext, IGainNode } from 'standardized-audio-context'
 
-import { getFirstSupportedOrigin } from './util'
+import { sourceDefaultOptions } from './config'
+import { TBragiContext, TBragiPonyfill, IBragiCodecsValidator, IBragiSourceOptions } from './types'
+import { getFirstSupportedOrigin, IBragiLogger, useSetGain } from './util'
 
 export class BragiSource {
     #safe: TBragiPonyfill
 
-    #context?: TBragiContext
     #getContext: () => TBragiContext
+    #getRootDestination: () => IGainNode<IAudioContext>
+
+    #destination?: IGainNode<IAudioContext>
 
     #codecs: IBragiCodecsValidator
 
     #controller: AbortController
 
-    #origin: string | [TBragiSupportedExtension, string] | [TBragiSupportedExtension, string][]
+    #origin: string
 
     #type?: string
     #size?: number
-    #stream?: ReadableStreamDefaultReader<Uint8Array>
+    #gain: number
 
-    #loaded?: Promise<void>
+    #logger: IBragiLogger
+
+    #loaded?: Promise<ReadableStreamDefaultReader<Uint8Array>>
 
     constructor(
         safe: TBragiPonyfill,
         getContext: () => TBragiContext,
+        getRootDestination: () => IGainNode<IAudioContext>,
         codecs: IBragiCodecsValidator,
-        { origin }: any,
+        logger: IBragiLogger,
+        options: Partial<IBragiSourceOptions>,
     ) {
+        const currentOptions = { ...sourceDefaultOptions, ...options }
+
+        const { gain, preload, origin } = currentOptions
+
+        this.#logger = logger
         this.#safe = safe
-
         this.#getContext = getContext
-
+        this.#getRootDestination = getRootDestination
         this.#codecs = codecs
+
+        this.#gain = gain
+        this.#origin = getFirstSupportedOrigin(origin, this.#codecs, this.#logger)
 
         this.#controller = new this.#safe.AbortController()
 
-        this.#origin = origin
-
-        this.#preload()
+        if (preload) this.#loaded = this.#preload()
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    get inspect() {
-        return {
-            safe: !!this.#safe,
-            type: this.#type,
-            size: this.#size,
-        }
+    readonly inspect = () => ({
+        safe: !!this.#safe,
+        origin: this.#origin,
+        type: this.#type,
+        size: this.#size,
+    })
+
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    readonly #getReader = () => this.#loaded || this.#preload()
+
+    readonly #getDestination = (): IGainNode<IAudioContext> => {
+        if (this.#destination) return this.#destination
+
+        const ctx = this.#getContext()
+        const node = ctx.createGain()
+        node.connect(this.#getRootDestination())
+
+        useSetGain(node, ctx)(this.#gain)
+
+        return (this.#destination = node)
     }
 
-    readonly #preload = () => {
-        this.#loaded = this.#safe
-            .fetch(getFirstSupportedOrigin(this.#origin, this.#codecs), {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    readonly #preload = () =>
+        this.#safe
+            .fetch(this.#origin, {
                 signal: this.#controller.signal,
             })
             .then(({ body, headers }) => {
-                this.#type = headers.get('Content-Type') ?? undefined
+                this.#setType(headers.get('Content-Type'))
 
-                this.#verifyRequestType()
+                this.#setSize(headers.get('Content-Size'))
 
-                const size = headers.get('Content-Size')
-                this.#size = size ? +size : Infinity
+                if (!body) throw new this.#safe.Error('Unexpected body undefined.')
 
-                if (!body) throw new Error('Unexpected body undefined.')
-
-                this.#stream = body.getReader()
+                return body.getReader()
             })
+
+    readonly #setType = (type: string | null): void => {
+        if (!type)
+            throw new this.#safe.Error('Header Content-Type is undefined. Verify your server.')
+        if (!this.#codecs.canPlayType(type))
+            throw new this.#safe.Error(`This browser not can't play type '${type}'.`)
+
+        this.#type = type
     }
 
-    readonly #verifyRequestType = () => {
-        if (!this.#type) throw new Error('Header Content-Type is undefined. Verify your server.')
-        if (!this.#codecs.canPlayType(this.#type))
-            throw new Error(`This browser not can't play type '${this.#type}'.`)
-    }
-
-    readonly #verifyContext = async (): Promise<void> => {
-        await this.#loaded
-
-        if (this.#context) return
-
-        this.#context = this.#getContext()
+    readonly #setSize = (size: string | null): void => {
+        this.#size = size ? +size : Infinity
     }
 
     readonly resume = async (): Promise<void> => {
-        await this.#verifyContext()
+        const reader = await this.#getReader()
 
-        console.log(this.#stream, this.#context)
+        const ctx = this.#getContext()
+
+        let { buffer } = (await reader.read()).value ?? {}
+        while (buffer) {
+            const audioBufferChunk = await ctx.decodeAudioData(buffer)
+            const source = ctx.createBufferSource()
+            source.buffer = audioBufferChunk
+            source.connect(this.#getDestination())
+            source.start()
+            buffer = undefined
+        }
     }
 
     readonly pause = (): void => {
@@ -97,15 +125,18 @@ export class BragiSource {
     }
 
     readonly cancel = (): void => {
-        return
+        this.#controller.abort()
     }
 
     readonly mute = (): void => {
-        return
+        const destination = this.#getDestination()
+        const { minValue } = destination.gain
+
+        useSetGain(destination, this.#getContext())(minValue)
     }
 
     readonly unmute = (): void => {
-        return
+        useSetGain(this.#getDestination(), this.#getContext())(this.#gain)
     }
 
     readonly disconnect = (): void => {
