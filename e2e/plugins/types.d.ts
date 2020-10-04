@@ -3,14 +3,22 @@ declare module '@cypress/code-coverage/task' {
 }
 
 declare module '@cypress/browserify-preprocessor' {
-    const fn = function (options): (file: Cypress.FileObject) => string | Promise<string> {
-        return
+    const options = {
+        typescript: '',
+        browserifyOptions: {
+            transform: [] as string[],
+            extensions: [] as string[],
+        },
+        onBundle(_bundler: unknown): void {
+            return
+        },
     }
 
-    const options: {
-        [index: string]: any
-    } = {}
-
+    const fn = function (
+        _options: typeof options,
+    ): (file: Cypress.FileObject) => string | Promise<string> {
+        return
+    }
     fn.defaultOptions = options
 
     export default fn
