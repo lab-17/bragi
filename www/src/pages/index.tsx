@@ -4,7 +4,7 @@ import Layout from '@theme/Layout'
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext'
 import useBaseUrl from '@docusaurus/useBaseUrl'
 
-const features: any[] = []
+const features: { title: string; description: string; imageUrl: string }[] = []
 
 function FeatureText({ title, description }) {
     return (
@@ -78,7 +78,7 @@ function HomeMain() {
     )
 }
 
-function Home() {
+function Home(): JSX.Element {
     const context = useDocusaurusContext()
     const { siteConfig = {} } = context
     return (
