@@ -122,7 +122,7 @@ function createBrowserOutputConfig({ name, format, modules, browsers }) {
         name,
         format,
         exports: 'named',
-        file: `${outputDir}/bundle/${format}/${filename}.js`,
+        file: `${outputDir}/bundle/${filename}.${format}.js`,
         plugins: [babelPlugin],
     }
 }
