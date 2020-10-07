@@ -1,0 +1,15 @@
+github:
+  prebuilds:
+    master: true
+    branches: true
+    pullRequests: true
+    addCheck: true
+    addComment: true
+vscode:
+  extensions:
+    - esbenp.prettier-vscode@5.7.1:GDba64T6G+TUi1qmc6BE3A==
+    - dbaeumer.vscode-eslint@2.1.8:02aHhbJ0Q4aGdjHXlTdVKg==
+    - oderwat.indent-rainbow@7.4.0:fDVCkGVYd1R2lfcs1tHk+Q==
+    - eamodio.gitlens@10.2.1:WIWu3zHU4VPT8r/v866LUw==
+    - mhutchie.git-graph@1.26.0:m8EvA1owa1dL2R6+Swieyg==
+    - CoenraadS.bracket-pair-colorizer@1.0.61:+jQByqALW0iXkhpd2yzYzQ==

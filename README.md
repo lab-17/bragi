@@ -8,3 +8,4 @@
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/lab-17/bragi.svg?style=flat-square&logo=code-climate)](https://codeclimate.com/github/lab-17/bragi/maintainability)
 [![Code Climate coverage](https://img.shields.io/codeclimate/coverage/lab-17/bragi.svg?style=flat-square&logo=code-climate)](https://codeclimate.com/github/lab-17/bragi/test_coverage)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square)](http://commitizen.github.io/cz-cli/)
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod&style=flat-square)](https://gitpod.io/#https://github.com/<your-org>/<your-project>)
