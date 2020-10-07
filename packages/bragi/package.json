@@ -41,7 +41,7 @@
     "audiostream"
   ],
   "optionalDependencies": {
-    "standardized-audio-context": "^25.1.0"
+    "standardized-audio-context": "^25.1.2"
   },
   "publishConfig": {
     "access": "public"
