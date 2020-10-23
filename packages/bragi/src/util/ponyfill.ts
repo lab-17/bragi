@@ -1,12 +1,16 @@
 import { TBragiPonyfill } from '../types'
+
 import { envName, safeGlobal, usedWebApis } from '../config'
+
 import { IBragiLogger } from './logger'
+import { freeze } from './object'
 
 export function createWebApisPonyfill(
     ponyfills: Partial<TBragiPonyfill> = {},
     logger: IBragiLogger,
     usedApis = usedWebApis,
     global = safeGlobal,
+    environmentName = envName,
 ): [boolean, TBragiPonyfill] {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const safe = {} as any
@@ -14,14 +18,21 @@ export function createWebApisPonyfill(
     let supported = true
 
     usedApis.forEach((api) => {
-        const [isSupported, ponyfill] = getPonyfill(ponyfills, api, logger, safe, global)
+        const [isSupported, ponyfill] = getPonyfill(
+            ponyfills,
+            api,
+            logger,
+            safe,
+            global,
+            environmentName,
+        )
 
         if (!isSupported) supported = false
 
         safe[api] = ponyfill
     })
 
-    return [supported, safe as TBragiPonyfill]
+    return [supported, freeze(safe, safe) as TBragiPonyfill]
 }
 
 function getPonyfill<T extends keyof TBragiPonyfill>(
@@ -29,18 +40,19 @@ function getPonyfill<T extends keyof TBragiPonyfill>(
     api: T,
     logger: IBragiLogger,
     safe: TBragiPonyfill,
-    global = safeGlobal,
+    global: any,
+    envName: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): [boolean, any] {
     const ponyOrNative = ponyfills[api] || createBindGlobal(api, logger, global)
 
-    return [!!ponyOrNative, ponyOrNative || createErrorOnCall(api, logger, safe)]
+    return [!!ponyOrNative, ponyOrNative || createErrorOnCall(api, logger, safe, envName)]
 }
 function createBindGlobal<T extends keyof TBragiPonyfill>(
     api: T,
     logger: IBragiLogger,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    global: any = safeGlobal,
+    global: any,
 ): TBragiPonyfill[T] | false {
     const impl = global[api] || global[`webkit${api}`] || global?.navigator?.[api]
 
@@ -63,9 +75,9 @@ function createErrorOnCall<T extends keyof TBragiPonyfill>(
     api: T,
     logger: IBragiLogger,
     safe: TBragiPonyfill,
-    name = envName,
+    envName: string,
 ) {
-    const msg = `This ${name} not have support to '${api}', please add a ponyfill.`
+    const msg = `This ${envName} not have support to '${api}', please add a ponyfill.`
 
     logger.warn(`${msg} This throw an error if called.`)
 

@@ -14,13 +14,10 @@ describe('Root Integration tests', () => {
         expect(new Bragi()).toBeInstanceOf(Bragi)
     })
 
-    it('should Bragi run in not supported environment whit Ponyfill', () => {
-        expect(
-            new Bragi({
-                ponyfills: {
-                    AudioContext,
-                },
-            }),
-        ).toBeInstanceOf(Bragi)
+    it('should Bragi run in not supported environment with Ponyfill', () => {
+        Bragi.setPonyfills({
+            AudioContext,
+        })
+        expect(new Bragi()).toBeInstanceOf(Bragi)
     })
 })

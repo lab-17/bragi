@@ -1,8 +1,10 @@
 import { IAudioContext, IGainNode } from 'standardized-audio-context'
 
 import { sourceDefaultOptions } from './config'
+
 import { TBragiContext, TBragiPonyfill, IBragiCodecsValidator, IBragiSourceOptions } from './types'
-import { getFirstSupportedOrigin, IBragiLogger, useSetGain } from './util'
+
+import { freeze, getFirstSupportedOrigin, IBragiLogger, setGain } from './util'
 
 export class BragiSource {
     #safe: TBragiPonyfill
@@ -53,12 +55,16 @@ export class BragiSource {
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-    readonly inspect = () => ({
-        safe: !!this.#safe,
-        origin: this.#origin,
-        type: this.#type,
-        size: this.#size,
-    })
+    readonly inspect = () =>
+        freeze(
+            {
+                safe: !!this.#safe,
+                origin: this.#origin,
+                type: this.#type,
+                size: this.#size,
+            },
+            this.#safe,
+        )
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     readonly #getReader = () => this.#loaded || this.#preload()
@@ -70,7 +76,7 @@ export class BragiSource {
         const node = ctx.createGain()
         node.connect(this.#getRootDestination())
 
-        useSetGain(node, ctx)(this.#gain)
+        setGain(node, ctx, this.#gain)
 
         return (this.#destination = node)
     }
@@ -132,11 +138,11 @@ export class BragiSource {
         const destination = this.#getDestination()
         const { minValue } = destination.gain
 
-        useSetGain(destination, this.#getContext())(minValue)
+        setGain(destination, this.#getContext(), minValue)
     }
 
     readonly unmute = (): void => {
-        useSetGain(this.#getDestination(), this.#getContext())(this.#gain)
+        setGain(this.#getDestination(), this.#getContext(), this.#gain)
     }
 
     readonly disconnect = (): void => {

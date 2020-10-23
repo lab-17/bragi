@@ -24,6 +24,8 @@ export const codecs = {
     flac: ['audio/x-flac;', 'audio/flac;'],
 }
 
+export const codecsNames = (Object.keys(codecs) as unknown) as TBragiSupportedExtension[]
+
 /* (keyof (Window & typeof globalThis))[] */
 export const usedWebApis = <const>[
     'Error',
@@ -62,6 +64,12 @@ export const sourceDefaultOptions: IBragiSourceOptions = {
     origin: [],
     preload: false,
     gain: 1.0,
+}
+
+export const defaultMessages = <const>{
+    empty: 'At least a parameter is required',
+    notAllowed: 'This parameters is not allowed in this method',
+    invalid: 'The type of parameters is invalid',
 }
 
 export type TBragiUsedWebApis = typeof usedWebApis

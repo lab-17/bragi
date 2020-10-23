@@ -1,32 +1,34 @@
-import { BragiSource } from './source'
-
-import { isBrowser, codecs, unlockEvents, listenerOptions, rootDefaultOptions } from './config'
+import { IAudioContext, IGainNode } from 'standardized-audio-context'
 
 import {
     TBragiContext,
     TBragiPonyfill,
     TBragiNode,
     IBragiOptions,
-    IBragiSourceOptions,
+    TBragiAddSourceOptions,
 } from './types'
+
+import { isBrowser, codecs, unlockEvents, listenerOptions, rootDefaultOptions } from './config'
 
 import {
     freeze,
-    remap,
     createWebApisPonyfill,
     IBragiCodecsValidator,
     createCodecsValidator,
-    useSetGain,
+    setGain,
     createLogger,
     IBragiLogger,
     TBragiLoggerLevel,
     createRunner,
+    createApplier,
+    clearAndFreeze,
 } from './util'
 
-import { IAudioContext, IGainNode } from 'standardized-audio-context'
+import { BragiSource } from './source'
 
 let globalContext: TBragiContext
-let safe: TBragiPonyfill
+let globalSafe: TBragiPonyfill
+let globalUserPonyfills: Partial<TBragiPonyfill>
 
 let audioTool: HTMLMediaElement
 let codecsValidator: IBragiCodecsValidator
@@ -43,7 +45,11 @@ export class Bragi {
     #muted: boolean
     #gain: number
 
-    readonly #mapper: Bragi['_mapper'] & { maps: IBragiStorageMaps }
+    readonly #name = 'BragiAudioGroup'
+
+    readonly #safe: TBragiPonyfill
+
+    readonly #mapper: IBragiStorageMaps
     readonly #inspect: Bragi['_inspect']
 
     readonly #logLevel: TBragiLoggerLevel
@@ -56,12 +62,12 @@ export class Bragi {
     constructor(options: Partial<IBragiOptions> = {}) {
         const currentOptions = { ...rootDefaultOptions, ...options }
 
-        const { autoUnlock, gain, muted, ponyfills, logLevel } = currentOptions
+        const { autoUnlock, gain, muted, logLevel } = currentOptions
 
         this.#logLevel = logLevel
         this.#logger = createLogger(this.#logLevel)
 
-        this.#applyPonyfills(ponyfills)
+        this.#safe = this.#getSafe()
 
         this.#autoUnlock = autoUnlock
         this.#gain = gain
@@ -69,186 +75,280 @@ export class Bragi {
 
         this.#inspect = this._inspect
 
-        const maps: IBragiStorageMaps = {
-            sources: new safe.Map(),
-            nodes: new safe.Map(),
-            toApplyNodes: new safe.Map(),
-        }
+        this.#mapper = freeze(
+            {
+                nodes: new this.#safe.Map(),
+                sources: new this.#safe.Map(),
+                toApplyNodes: new this.#safe.Map(),
+            },
+            this.#safe,
+        )
 
-        this.#mapper = {
-            ...this._mapper,
-            maps,
-        }
-
-        this.#sources = maps.sources
-        this.#nodes = maps.nodes
-        this.#toApplyNodes = maps.toApplyNodes
+        this.#sources = this.#mapper.sources
+        this.#nodes = this.#mapper.nodes
+        this.#toApplyNodes = this.#mapper.toApplyNodes
 
         this.#addUnlockListeners()
 
-        freeze(remap(this, safe), safe)
+        clearAndFreeze(this, this.#safe)
     }
 
-    readonly add = <T extends keyof Bragi['_mapper']['add']>(
-        type: T,
-        ...sourcesOrNodes: (
-            | Parameters<Bragi['_mapper']['add'][T]>[0]
-            | Parameters<Bragi['_mapper']['add'][T]>[0][]
-        )[]
-    ): symbol[] => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return sourcesOrNodes.flat(2).map((options) => this.#mapper.add[type](options as any))
+    static readonly setPonyfills = (
+        ponyfills: Partial<TBragiPonyfill>,
+    ): Partial<TBragiPonyfill> => {
+        return globalUserPonyfills ?? (globalUserPonyfills = ponyfills)
     }
 
-    readonly remove = <T extends keyof Bragi['_mapper']['remove']>(
-        type: T,
-        ...targets: (symbol | symbol[])[]
-    ): void => {
-        this.#mapper.remove[type](targets.flat())
-        return
+    readonly #getSafe = (): TBragiPonyfill => {
+        return globalSafe ?? (globalSafe = this.#createSafe(globalUserPonyfills))
     }
 
-    readonly resume = createRunner({
-        verify: () => {
-            this.#unlock(true)
-            this.#applyNode(true)
-        },
-        inAll: async (_inDepth: true) => {
-            const promises: Promise<void>[] = []
+    readonly #getLogger = (): IBragiLogger => {
+        return this.#logger
+    }
 
-            this.#sources.forEach((methods) => {
-                promises.push(methods.resume())
-            })
+    readonly addSource = createApplier(({ label, ...options }: TBragiAddSourceOptions): symbol => {
+        const id = this.#safe.Symbol(label)
 
-            await safe.Promise.all(promises)
+        this.#sources.set(
+            id,
+            new BragiSource(
+                this.#safe,
+                this.#getContext,
+                this.#getDestination,
+                this.#getCodecs(),
+                this.#logger,
+                freeze(options, this.#safe),
+            ),
+        )
 
-            return
-        },
-        inSelection: async (targets: symbol[]) => {
-            await safe.Promise.all(
-                targets.map((target) => {
-                    return this.#get('source', target).resume()
-                }),
-            )
-            return
-        },
-    })
+        return id
+    }, this.#getSafe)
 
-    readonly pause = createRunner({
-        inAll: (_inDepth: true) => {
-            this.#sources.forEach((methods) => {
-                methods.pause()
-            })
-        },
-        inSelection: (targets: symbol[]) => {
-            targets.forEach((target) => {
-                this.#get('source', target).pause()
-            })
-        },
-    })
+    readonly addNode = createApplier(({ label, target, ...options }: IBragiNodeOptions): symbol => {
+        const id = this.#safe.Symbol(label)
 
-    readonly cancel = createRunner({
-        inAll: (_inDepth: true) => {
-            this.#sources.forEach((methods) => {
-                methods.cancel()
-            })
-        },
-        inSelection: (targets: symbol[]) => {
-            targets.forEach((target) => {
-                this.#get('source', target).cancel()
-            })
-        },
-    })
+        this.#toApplyNodes.set(id, [freeze(options, this.#safe), target])
 
-    readonly mute = createRunner({
-        inAll: (inDepth: boolean) => {
-            if (this.#muted) return
+        if (!locked) this.#applyNode(id)
 
-            const destination = this.#get('destination')
-            const { minValue } = destination.gain
+        return id
+    }, this.#getSafe)
 
-            useSetGain(destination, this.#get('context'))(minValue)
-
-            if (inDepth)
+    readonly removeSource = createRunner(
+        {
+            inAll: (_inDepth: true) => {
+                this.cancel(true)
                 this.#sources.forEach((methods) => {
-                    methods.mute()
+                    methods.disconnect()
+                })
+                this.#sources.clear()
+            },
+            inSelection: (targets: readonly symbol[]) => {
+                targets.forEach((target) => {
+                    this.cancel(target)
+                    this.#getSource(target).disconnect()
+                    this.#sources.delete(target)
+                })
+            },
+        },
+        this.#getSafe,
+        this.#getLogger,
+        this.#name,
+    )
+
+    readonly removeNode = createRunner(
+        {
+            inAll: (_inDepth: true) => {
+                this.#nodes.forEach((methods) => {
+                    methods.disconnect()
+                })
+                this.#nodes.clear()
+            },
+            inSelection: (targets: readonly symbol[]) => {
+                targets.forEach((target) => {
+                    this.#getNode(target).disconnect()
+                    this.#nodes.delete(target)
+                })
+            },
+        },
+        this.#getSafe,
+        this.#getLogger,
+        this.#name,
+    )
+
+    readonly resume = createRunner(
+        {
+            verify: () => {
+                this.#unlock(true)
+                this.#applyNode(true)
+            },
+            inAll: async (_inDepth: true) => {
+                const promises: Promise<void>[] = []
+
+                this.#sources.forEach((methods) => {
+                    promises.push(methods.resume())
                 })
 
-            this.#muted = true
+                await this.#safe.Promise.all(promises)
 
-            return
+                return
+            },
+            inSelection: async (targets: readonly symbol[]) => {
+                await this.#safe.Promise.all(
+                    targets.map((target) => {
+                        return this.#getSource(target).resume()
+                    }),
+                )
+                return
+            },
         },
-        inSelection: (targets: symbol[]) => {
-            targets.forEach((target) => {
-                this.#get('source', target).mute()
-            })
-        },
-    })
+        this.#getSafe,
+        this.#getLogger,
+        this.#name,
+    )
 
-    readonly unmute = createRunner({
-        inAll: (inDepth: boolean) => {
-            if (!this.#muted) return
-
-            useSetGain(this.#get('destination'), this.#get('context'))(this.#gain)
-
-            if (inDepth)
+    readonly pause = createRunner(
+        {
+            inAll: (_inDepth: true) => {
                 this.#sources.forEach((methods) => {
-                    methods.unmute()
+                    methods.pause()
                 })
-
-            this.#muted = false
-
-            return
+            },
+            inSelection: (targets: readonly symbol[]) => {
+                targets.forEach((target) => {
+                    this.#getSource(target).pause()
+                })
+            },
         },
-        inSelection: (targets: symbol[]) => {
-            targets.forEach((target) => {
-                this.#get('source', target).unmute()
-            })
+        this.#getSafe,
+        this.#getLogger,
+        this.#name,
+    )
+
+    readonly cancel = createRunner(
+        {
+            inAll: (_inDepth: true) => {
+                this.#sources.forEach((methods) => {
+                    methods.cancel()
+                })
+            },
+            inSelection: (targets: readonly symbol[]) => {
+                targets.forEach((target) => {
+                    this.#getSource(target).cancel()
+                })
+            },
         },
-    })
+        this.#getSafe,
+        this.#getLogger,
+        this.#name,
+    )
 
-    readonly inspect = createRunner({
-        inAll: (inDepth: boolean) => {
-            const structure = this.#inspect()
+    readonly mute = createRunner(
+        {
+            inAll: (inDepth: boolean) => {
+                if (this.#muted) return
 
-            if (inDepth) {
-                const depthStructure = ({ ...structure } as unknown) as IBragiReturnInspect
+                const destination = this.#getDestination()
+                const { minValue } = destination.gain
 
-                const { maps } = this.#mapper
-                ;(safe.Object.keys(maps) as (keyof typeof maps)[]).forEach((key) => {
-                    depthStructure[key] = []
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    maps[key].forEach((methods: any) => {
-                        depthStructure[key].push(methods?.inspect?.() ?? methods[0])
+                setGain(destination, this.#getContext(), minValue)
+
+                if (inDepth)
+                    this.#sources.forEach((methods) => {
+                        methods.mute()
                     })
+
+                this.#muted = true
+
+                return
+            },
+            inSelection: (targets: readonly symbol[]) => {
+                targets.forEach((target) => {
+                    this.#getSource(target).mute()
+                })
+            },
+        },
+        this.#getSafe,
+        this.#getLogger,
+        this.#name,
+    )
+
+    readonly unmute = createRunner(
+        {
+            inAll: (inDepth: boolean) => {
+                if (!this.#muted) return
+
+                setGain(this.#getDestination(), this.#getContext(), this.#gain)
+
+                if (inDepth)
+                    this.#sources.forEach((methods) => {
+                        methods.unmute()
+                    })
+
+                this.#muted = false
+
+                return
+            },
+            inSelection: (targets: readonly symbol[]) => {
+                targets.forEach((target) => {
+                    this.#getSource(target).unmute()
+                })
+            },
+        },
+        this.#getSafe,
+        this.#getLogger,
+        this.#name,
+    )
+
+    readonly inspect = createRunner(
+        {
+            inAll: (inDepth: boolean) => {
+                const structure = this.#inspect()
+
+                if (inDepth) {
+                    const depthStructure = ({ ...structure } as unknown) as IBragiReturnInspect
+
+                    ;(this.#safe.Object.keys(this.#mapper) as (keyof IBragiStorageMaps)[]).forEach(
+                        (key) => {
+                            depthStructure[key] = []
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            this.#mapper[key].forEach((methods: any) => {
+                                depthStructure[key].push(methods?.inspect?.() ?? methods[0])
+                            })
+                        },
+                    )
+
+                    return depthStructure
+                }
+
+                return structure
+            },
+            inGroup: (name: keyof IBragiStorageMaps, targets: readonly symbol[]) => {
+                const results: IBragiReturnInspect[typeof name][] = targets.map((target) => {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const current = this.#mapper[name].get(target) as any
+                    return current?.inspect?.() ?? current[0]
                 })
 
-                return depthStructure
-            }
+                if (results.length > 0) return results
 
-            return structure
+                this.#mapper[name].forEach((methods: unknown) => {
+                    const result =
+                        (methods as BragiSource | undefined)?.inspect?.() ??
+                        ((methods as unknown[] | undefined)?.[0] as IBragiNodeOptions) ??
+                        methods
+
+                    results.push(result as typeof result | any)
+                })
+
+                return results
+            },
         },
-        inGroup: (name: keyof IBragiStorageMaps, targets: symbol[]) => {
-            const results: IBragiReturnInspect[typeof name][] = targets.map((target) => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const current = this.#mapper.maps[name].get(target) as any
-                return current?.inspect?.() ?? current[0]
-            })
-
-            if (results.length > 0) return results
-
-            this.#mapper.maps[name].forEach((methods: unknown) => {
-                const result =
-                    (methods as BragiSource | undefined)?.inspect() ??
-                    ((methods as unknown[] | undefined)?.[0] as IBragiNodeOptions) ??
-                    methods
-
-                results.push(result as typeof result | any)
-            })
-
-            return results
-        },
-    })
+        this.#getSafe,
+        this.#getLogger,
+        this.#name,
+    )
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     private readonly _inspect = () => ({
         autoUnlock: this.#autoUnlock,
@@ -258,39 +358,34 @@ export class Bragi {
         locked: locked,
         muted: this.#muted,
         nodes: this.#nodes?.size ?? 0,
-        safe: !!safe,
+        safe: !!this.#safe,
         sources: this.#sources?.size ?? 0,
         toApplyNodes: this.#toApplyNodes?.size ?? 0,
         context: !!this.#context,
         isSupported: isSupported,
+        codecs: this.#getCodecs().support,
     })
-
-    readonly #get = <T extends keyof Bragi['_mapper']['get']>(
-        type: T,
-        ...args: Parameters<Bragi['_mapper']['get'][T]> | Parameters<Bragi['_mapper']['get'][T]>[]
-    ): ReturnType<Bragi['_mapper']['get'][T]> => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return (this.#mapper.get[type] as any)(...args)
-    }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     readonly #getCodecs = () => {
         return (
             codecsValidator ??
             (codecsValidator = createCodecsValidator(
-                audioTool ?? (audioTool = new safe.Audio()),
+                audioTool ?? (audioTool = new this.#safe.Audio()),
                 codecs,
-                safe,
+                this.#safe,
             ))
         )
     }
+
     readonly #getContext = (): TBragiContext => {
         const context = this.#context
 
-        if (!context) throw new safe.Error(`AudioContext not initialized.`)
+        if (!context) throw new this.#safe.Error(`AudioContext not initialized.`)
 
         return context
     }
+
     readonly #getDestination = (): IGainNode<IAudioContext> => {
         if (this.#destination) return this.#destination
 
@@ -298,112 +393,39 @@ export class Bragi {
         const node = ctx.createGain()
         node.connect(ctx.destination)
 
-        useSetGain(node, ctx)(this.#gain)
+        setGain(node, ctx, this.#gain)
 
         return (this.#destination = node)
     }
+
     readonly #getSource = (id: symbol): BragiSource => {
         const source = this.#sources.get(id)
 
-        if (!source) throw new safe.Error(`Source ${id.toString()} not exists`)
+        if (!source) throw new this.#safe.Error(`Source ${id.toString()} not exists`)
 
         return source
     }
     readonly #getNode = (id: symbol): any => {
         const node = this.#nodes.get(id)
 
-        if (!node) throw new safe.Error(`Node ${id.toString()} not exists`)
+        if (!node) throw new this.#safe.Error(`Node ${id.toString()} not exists`)
 
         return node
     }
 
-    readonly #addSource = ({
-        label,
-        ...options
-    }: IBragiSourceOptions & { label: string }): symbol => {
-        const id = safe.Symbol(label)
-
-        this.#sources.set(
-            id,
-            new BragiSource(
-                safe,
-                this.#getContext,
-                this.#getDestination,
-                this.#get('codecs'),
-                this.#logger,
-                options,
-            ),
-        )
-
-        return id
-    }
-    readonly #addNode = ({ label, target, ...options }: IBragiNodeOptions): symbol => {
-        const id = safe.Symbol(label)
-
-        this.#toApplyNodes.set(id, [options, target])
-
-        if (!locked) this.#applyNode(id)
-
-        return id
-    }
-
-    readonly #removeSource = createRunner({
-        inAll: (_inDepth: true) => {
-            this.cancel(true)
-            this.#sources.forEach((methods) => {
-                methods.disconnect()
-            })
-            this.#sources.clear()
+    readonly #applyNode = createRunner(
+        {
+            inAll: (_inDepth: true) => {
+                return
+            },
+            inSelection: (_targets: readonly symbol[]) => {
+                return
+            },
         },
-        inSelection: (targets: symbol[]) => {
-            targets.forEach((target) => {
-                this.cancel(target)
-                this.#get('source', target).disconnect()
-                this.#sources.delete(target)
-            })
-        },
-    })
-    readonly #removeNode = createRunner({
-        inAll: (_inDepth: true) => {
-            this.#nodes.forEach((methods) => {
-                methods.disconnect()
-            })
-            this.#nodes.clear()
-        },
-        inSelection: (targets: symbol[]) => {
-            targets.forEach((target) => {
-                this.#get('node', target).disconnect()
-                this.#nodes.delete(target)
-            })
-        },
-    })
-
-    readonly #applyNode = createRunner({
-        inAll: (_inDepth: true) => {
-            return
-        },
-        inSelection: (_targets: symbol[]) => {
-            return
-        },
-    })
-
-    private readonly _mapper = {
-        get: {
-            destination: this.#getDestination,
-            context: this.#getContext,
-            codecs: this.#getCodecs,
-            source: this.#getSource,
-            node: this.#getNode,
-        },
-        add: {
-            source: this.#addSource,
-            node: this.#addNode,
-        },
-        remove: {
-            source: this.#removeSource,
-            node: this.#removeNode,
-        },
-    }
+        this.#getSafe,
+        this.#getLogger,
+        this.#name,
+    )
 
     readonly #unlock = (force?: Event | boolean): void => {
         if (!locked || !force) return
@@ -412,7 +434,7 @@ export class Bragi {
 
         this.#removeUnlockListeners()
 
-        this.#context = globalContext || (globalContext = new safe.AudioContext())
+        this.#context = globalContext ?? (globalContext = new this.#safe.AudioContext())
     }
 
     readonly #addUnlockListeners = (): void => {
@@ -421,7 +443,7 @@ export class Bragi {
         listening = true
 
         unlockEvents.forEach((eventName) =>
-            safe.addEventListener(eventName, this.#unlock, listenerOptions),
+            this.#safe.addEventListener(eventName, this.#unlock, listenerOptions),
         )
     }
 
@@ -430,33 +452,38 @@ export class Bragi {
 
         listening = false
 
-        unlockEvents.forEach((eventName) => safe.removeEventListener(eventName, this.#unlock))
+        unlockEvents.forEach((eventName) => this.#safe.removeEventListener(eventName, this.#unlock))
     }
 
-    readonly #applyPonyfills = (ponyfills?: Partial<TBragiPonyfill>): void => {
-        if (safe) return
+    readonly #setIsSupported = (newIsSupported: boolean): void => {
+        isSupported = newIsSupported
+    }
 
-        const [verifiedSupport, safeImplementations] = createWebApisPonyfill(
-            ponyfills,
-            this.#logger,
-        )
+    readonly #createSafe = (ponyfills?: Partial<TBragiPonyfill>): TBragiPonyfill => {
+        if (this.#safe) return this.#safe
 
-        safe = safeImplementations
-        isSupported = verifiedSupport
+        const result = createWebApisPonyfill(ponyfills, this.#logger)
+
+        const [newIsSupported, newSafe] = result
+
+        this.#setIsSupported(newIsSupported)
+
+        return newSafe
     }
 }
 
 export const bragi = Bragi
 
+export const setBragiPonyfills = Bragi.setPonyfills
 export const useBragi = (options: Partial<IBragiOptions> = {}): Bragi => new Bragi(options)
 
 export { Bragi as default }
 
 export type TBragiPublicStates = Bragi['_inspect']
 export interface IBragiStorageMaps {
-    sources: Map<symbol, BragiSource>
-    nodes: Map<symbol, TBragiNode>
-    toApplyNodes: Map<symbol, [IBragiNodeOptions, symbol?]>
+    readonly sources: Map<symbol, BragiSource>
+    readonly nodes: Map<symbol, TBragiNode>
+    readonly toApplyNodes: Map<symbol, [IBragiNodeOptions, symbol?]>
 }
 
 export type IBragiReturnInspect = Omit<ReturnType<Bragi['_inspect']>, keyof IBragiStorageMaps> & {
