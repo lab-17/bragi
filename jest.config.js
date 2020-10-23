@@ -3,7 +3,7 @@ module.exports = {
     testEnvironment: 'node',
     collectCoverage: true,
     coverageDirectory: 'coverage/server',
-    coverageReporters: ['json'],
+    coverageReporters: ['json', 'lcov'],
     collectCoverageFrom: ['packages/**/src/**/*.ts'],
     testRegex: ['/tests/server/.*\\.spec\\.ts$'],
     coveragePathIgnorePatterns: [`(\\/|\\.)types\\.ts$`],

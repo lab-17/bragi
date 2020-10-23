@@ -1,5 +1,5 @@
 report-dir: coverage/client
-reporter: [json]
+reporter: [json, lcov]
 all: true
 include: ['packages/**/src/**/*.ts']
 exclude: ['**/types.ts', '**/*.types.ts']
