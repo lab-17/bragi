@@ -29,6 +29,12 @@ const browserConfig = {
     ...commonConfig,
 }
 
+const terserOptions = {
+    compress: true,
+    mangle: true,
+    toplevel: true,
+}
+
 const banedSupport = 'not dead and not op_mini all and not ie 11'
 const legacySupport = `cover 99.5% and ${banedSupport}`
 const modernSupport = `${legacySupport} and supports es6-module`
@@ -38,7 +44,7 @@ const nodeLegacySupport = 'maintained node versions'
 
 const node = {
     input,
-    plugins: [typescript(compilerOptions), strip(), terser()],
+    plugins: [typescript(compilerOptions), strip(), terser(terserOptions)],
     output: [
         { format: 'esm', browsers: nextSupport, node: true },
         { format: 'cjs', exports: 'named' },
@@ -61,7 +67,7 @@ const typeDefinitions = {
 
 const browsers = {
     input,
-    plugins: [typescript(compilerOptions), strip(), terser()],
+    plugins: [typescript(compilerOptions), strip(), terser(terserOptions)],
     output: [
         { format: 'esm', modules: 'auto', browsers: modernSupport },
         { name: filename, format: 'umd' },
@@ -117,12 +123,25 @@ function createBrowserOutputConfig({ name, format, modules, browsers }) {
         ],
     })
 
+    const fileName = `${filename}.${format}.js`
+
+    const banner =
+        [
+            fileName,
+            'https://lab-17.github.io/bragi/',
+            '',
+            'Copyright (C) 2020 Vinícius Carvalho & Sobrado 17',
+            '',
+            'MIT License',
+        ].reduce((acc, current) => `${acc}* ${current}\n `, '/*!\n ') + '*/\n'
+
     return {
         ...browserConfig,
         name,
         format,
         exports: 'named',
-        file: `${outputDir}/bundle/${filename}.${format}.js`,
+        file: `${outputDir}/bundle/${fileName}`,
         plugins: [babelPlugin],
+        banner,
     }
 }
